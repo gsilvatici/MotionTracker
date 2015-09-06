@@ -50,11 +50,13 @@
         var magnitude = Math.sqrt(x*x + y*y + z*z);
         return magnitude;
     }
-        
+    //Not sure if it's bad practice but is a temporaly solution for knowing the magnitude from the front end
+    var magnitude;
+
     // onSuccess: Get a snapshot of the current acceleration
     //
     function onSuccess(acceleration) {
-        var magnitude = accelMagnitude(acceleration);
+        magnitude = accelMagnitude(acceleration);
         /*var element = document.getElementById('accelerometer');
         element.innerHTML = 'Acceleration X: ' + acceleration.x + '<br />' +
                             'Acceleration Y: ' + acceleration.y + '<br />' +

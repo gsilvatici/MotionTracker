@@ -1,6 +1,6 @@
 /* jshint browser:true */
 (function() {
-
+    //wait for the DOM to be loaded
     document.addEventListener('DOMContentLoaded', function() {
         // create an new instance of a pixi stage
         var stage = new PIXI.Stage(0xFFFFFF);
@@ -15,12 +15,7 @@
 
         requestAnimFrame(animate);
 
-        // create a texture from an image path
-        var texture = PIXI.Texture.fromImage("asset/bunny.png");
-
-        // create a new Sprite using the texture
-        var bunny = new PIXI.Sprite(texture);
-        
+        // create a new Sprite using an image
         var background = PIXI.Sprite.fromImage("background.jpg");
         
         background.width = width;
@@ -28,24 +23,52 @@
         
         stage.addChildAt(background, 0);
         
-        /*
+        var text = new PIXI.Text("STILL", {font: "30px Desyrel", align: "right", fill: "white"});
+        
+        //text.height = text.height/2;
+        //text.width = text.width/2;
+        
+        
+        text.x = width*3/7;
+        text.y = height*2/5;
+        
+        //text.setStyle({font:"bold 50px Arial", fill""green"});
+        
+        stage.addChild(text);
 
-        // center the sprites anchor point
-        bunny.anchor.x = 0.5;
-        bunny.anchor.y = 0.5;
-
-        // move the sprite to the center of the screen
-        bunny.position.x = width / 2;
-        bunny.position.y = height / 2;
-
-        stage.addChild(bunny);*/
-
+        var lastFrame = (new Date()).getTime();
+        
         function animate() {
             requestAnimFrame(animate);
+            
+            var actualFrame = (new Date()).getTime();
+            
+            var deltaT = actualFrame - lastFrame;
+            
+            //changes the text if it has passed certain amount of time
+            if(deltaT > 100 ) {
 
-            // just for fun, let's rotate mr rabbit a little
-            //bunny.rotation += 0.1;
-
+                if(magnitude > 0 && magnitude <= 10.5) {
+                    text.setText("STILL");
+                    text.x = width*3/7;
+                }
+                else if(magnitude > 10.5 && magnitude <= 15) {
+                    text.setText("MOVING AROUND");
+                    text.x = width*1/5;
+                }
+                else if(magnitude > 15 && magnitude <= 45) {
+                    text.setText("ACCELERATED");
+                    text.x = width*1/4;
+                }
+                /*If there is a high accerations means that the velocity has changed
+                //abruptly, as when it hits the ground*/
+                else {
+                    text.setText("CRASHED");
+                    text.x = width*1/3;
+                }
+            lastFrame = actualFrame;
+            }
+            
             // render the stage
             renderer.render(stage);
         }
