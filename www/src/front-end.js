@@ -23,20 +23,28 @@
         
         stage.addChildAt(background, 0);
         
-        var text = new PIXI.Text("STILL", {font: "30px Desyrel", align: "right", fill: "white"});
-        
-        //text.height = text.height/2;
-        //text.width = text.width/2;
-        
-        
-        text.x = width*3/7;
+        var text = new PIXI.Text("STILL", {font: "30px Desyrel", align: "right", fill: "#701e1e"});
+
+        text.x = width*3/8;
         text.y = height*2/5;
-        
-        //text.setStyle({font:"bold 50px Arial", fill""green"});
         
         stage.addChild(text);
 
         var lastFrame = (new Date()).getTime();
+        
+        var transition = false;
+
+        var newText = text.text;
+        
+        var lastText = text.text;
+        
+        var pos = text.x;
+        
+        var EPS = 0.00001;
+        
+        var incr = -0.125;
+        
+        //alert(text.tint);
         
         function animate() {
             requestAnimFrame(animate);
@@ -45,33 +53,57 @@
             
             var deltaT = actualFrame - lastFrame;
             
-            //changes the text if it has passed certain amount of time
-            if(deltaT > 100 ) {
+            //text.tint = 16777215 - (magnitude - 8)*100; 
+            
+            //if the text has to be changed (a transition), fade the transition
+            if(transition) {
 
-                if(magnitude > 0 && magnitude <= 10.5) {
-                    text.setText("STILL");
-                    text.x = width*3/7;
+                if(text.alpha >= 0) {
+                    text.alpha += incr;
+                    if(Math.abs(text.alpha) < EPS) {
+                        //alert('gatoo');
+                        text.setText(newText);
+                        text.x = pos;
+                        incr = -incr;
+                        lastText = newText;
+                    }
+                    if(text.alpha == 1) {
+                        transition = false;
+                        incr = -incr;
+                    }
                 }
-                else if(magnitude > 10.5 && magnitude <= 15) {
-                    text.setText("MOVING AROUND");
-                    text.x = width*1/5;
+            }
+            //changes the text if it has passed certain amount of time
+            else if(deltaT > 150 ) {
+                
+                if(magnitude > 0 && magnitude <= 10.5 && newText != "STILL") {
+                    transition = true;
+                    newText = "STILL";
+                    pos = width*3/8;
                 }
-                else if(magnitude > 15 && magnitude <= 45) {
-                    text.setText("ACCELERATED");
-                    text.x = width*1/4;
+                else if(magnitude > 10.5 && magnitude <= 15 && newText != "MOVING AROUND") {
+                    transition = true;
+                    newText = "MOVING AROUND";
+                    pos = width*1/5;
+                }
+                else if(magnitude > 15 && magnitude <= 45 && newText != "ACCELERATED") {
+                    transition = true;
+                    newText = "ACCELERATED";
+                    pos = width*1/4;    
                 }
                 /*If there is a high accerations means that the velocity has changed
                 //abruptly, as when it hits the ground*/
-                else {
-                    text.setText("CRASHED");
-                    text.x = width*1/3;
+                else if(magnitude > 45 && newText != "CRASHED") {
+                    transition = true;
+                    newText = "CRASHED";
+                    pos = width*1/3;  
                 }
             lastFrame = actualFrame;
             }
             
             // render the stage
             renderer.render(stage);
-        }
+        }        
     }, false);
 
 }());
