@@ -15,15 +15,39 @@
 
         requestAnimFrame(animate);
 
-        // create a new Sprite using an image
+        // create a background Sprite using an image
         var background = PIXI.Sprite.fromImage("background.jpg");
+        
+        //  create the setting icon Sprite from an image
+        //var settings = PIXI.Sprite.fromImage("settings-icon.png");
+        
+        
+        // create a texture from an image path
+        var texture = PIXI.Texture.fromImage("settings-icon.png");
+
+        // create a new Sprite using the texture
+        var settings = new PIXI.Sprite(texture);
+        
+        settings.setInteractive(true);
+        
         
         background.width = width;
         background.height = height;
         
         stage.addChildAt(background, 0);
         
-        var text = new PIXI.Text("STILL", {font: "30px Desyrel", align: "right", fill: "#701e1e"});
+        
+        settings.x = width*4/5 ;
+        settings.y = height - height*17/18;
+        
+        settings.width = width*1/7
+        settings.height = settings.width;
+        
+
+        stage.addChild(settings);
+                
+        
+        var text = new PIXI.Text("STILL", {font: "35px Desyrel", align: "right", fill: "#bbbbbb"});
 
         text.x = width*3/8;
         text.y = height*2/5;
@@ -32,6 +56,14 @@
 
         var lastFrame = (new Date()).getTime();
         
+        // environmental variables
+        var envVar = {
+                transition: false,
+                EPS: 0.00001,
+                incr: -0.125,
+                screen: "main"
+        };
+
         var transition = false;
 
         var newText = text.text;
@@ -55,13 +87,12 @@
             
             //text.tint = 16777215 - (magnitude - 8)*100; 
             
-            //if the text has to be changed (a transition), fade the transition
+            // if the text has to be changed (a transition), fade the transition
             if(transition) {
 
                 if(text.alpha >= 0) {
                     text.alpha += incr;
                     if(Math.abs(text.alpha) < EPS) {
-                        //alert('gatoo');
                         text.setText(newText);
                         text.x = pos;
                         incr = -incr;
@@ -73,7 +104,7 @@
                     }
                 }
             }
-            //changes the text if it has passed certain amount of time
+            // changes the text if it has passed certain amount of time
             else if(deltaT > 150 ) {
                 
                 if(magnitude > 0 && magnitude <= 10.5 && newText != "STILL") {
@@ -81,10 +112,10 @@
                     newText = "STILL";
                     pos = width*3/8;
                 }
-                else if(magnitude > 10.5 && magnitude <= 15 && newText != "MOVING AROUND") {
+                else if(magnitude > 10.5 && magnitude <= 15 && newText != "CHANGING SPEED") {
                     transition = true;
-                    newText = "MOVING AROUND";
-                    pos = width*1/5;
+                    newText = "CHANGING SPEED";
+                    pos = width*1/7;
                 }
                 else if(magnitude > 15 && magnitude <= 45 && newText != "ACCELERATED") {
                     transition = true;
@@ -104,6 +135,24 @@
             // render the stage
             renderer.render(stage);
         }        
+        
+        
+        // callbacks for the touch events
+        settings.touchstart = function(touchData) {
+            settings.alpha = 0.5;
+            
+        }
+
+        settings.touchend = function(touchData) {
+            settings.alpha = 1;
+            envVar.screen = "swiping";
+        }
+        
+        settings.touchendoutside = function(touchData) {
+            settings.alpha = 1;
+        }
+        
+        
     }, false);
 
 }());
